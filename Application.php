@@ -13,7 +13,6 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 
 use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Console\ShellCommand;
-use Exception;
 
 /**
  * Console application
@@ -43,6 +42,9 @@ class Application
 
     /**
      * Constructor
+     *
+     * @param string $title
+     * @param string $version
      */
     public function __construct($title, $version = '') 
     {
@@ -72,22 +74,23 @@ class Application
      * Add commands to console app
      *
      * @param array $commands
-     * @return void
+     * @return boolean
      */
     public function addCommands($commands)
     {
-        if (is_array($commands) == false) {
+        if (\is_array($commands) == false) {
             return false;
         }
 
         foreach ($commands as $class) {          
             $command = Factory::createInstance($class);
-            if (is_object($command) == true) {
+            if (\is_object($command) == true) {
                 $this->application->add($command);
                 if ($command->isDefault() == true) {
                     $this->application->setDefaultCommand($command->getName());
                 }
             }
         }
+        return true;
     }
 }

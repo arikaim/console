@@ -11,6 +11,8 @@ namespace Arikaim\Core\Console;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 use Arikaim\Core\Console\ConsoleCommand;
 
@@ -48,7 +50,7 @@ class ShellCommand extends ConsoleCommand
         $app->setAutoExit(false);
       
         while(true) {
-            $command = trim($helper->ask($input, $output, $question));
+            $command = \trim($helper->ask($input, $output, $question));
             if ($command == 'exit') { 
                 $this->style->newLine();
                 exit();
