@@ -5,12 +5,11 @@
 
      
 #### Requirements 
-  * PHP 7.1, 7.2, 7.3
+  * PHP 7.1, 7.2, 7.3, 7.4
 
 
-#### Install
-```bash
+#### Installation
 
+```sh
 composer require arikaim/console
-
 ```

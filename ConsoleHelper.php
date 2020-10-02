@@ -23,7 +23,7 @@ class ConsoleHelper
      */
     public static function getLabelText($text, $color = 'green')
     {
-        return "<fg=$color>$text</>";
+        return '<fg=' . $color . '>' . $text . '</>';
     }
 
     /**
@@ -33,7 +33,7 @@ class ConsoleHelper
      */
     public static function checkMark()
     {
-        return "<fg=green>\xE2\x9C\x93</>";
+        return '<fg=green>\xE2\x9C\x93</>';
     }
     
     /**
@@ -44,7 +44,7 @@ class ConsoleHelper
      */
     public static function getStatusText($status)
     {
-        return ($status == 1) ? "<fg=green>Enabled</>" : '<fg=red>Disabled</>';
+        return ($status == 1) ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>';
     }
 
     /**
@@ -55,7 +55,7 @@ class ConsoleHelper
      */
     public static function getYesNoText($value)
     {
-        return ($value == true) ? "<fg=green>Yes</>" : '<fg=red>No</>';
+        return ($value == true) ? '<fg=green>Yes</>' : '<fg=red>No</>';
     }
 
     /**
@@ -66,6 +66,6 @@ class ConsoleHelper
      */
     public static function getDescriptionText($description)
     {
-        return "<fg=cyan>$description</>";
+        return '<fg=cyan>' . $description . '</>';
     }
 }

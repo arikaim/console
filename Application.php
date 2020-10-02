@@ -50,7 +50,7 @@ class Application
     {
         $this->title = $title;
         $this->version = $version;
-        $this->application = new ConsoleApplication("\n $title",$version);    
+        $this->application = new ConsoleApplication("\n " . $title,$version);    
 
         // add shell command 
         $shell = new ShellCommand('shell',$title);

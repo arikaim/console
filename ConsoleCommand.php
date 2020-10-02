@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Base class for all commands
@@ -102,6 +103,19 @@ abstract class ConsoleCommand extends Command
     }
 
     /**
+     * Add optional option
+     *
+     * @param string $name
+     * @param string $description
+     * @param mixed $default
+     * @return void
+     */
+    public function addOptionalOption($name, $description = '', $default = null)
+    {
+        $this->addOption($name,null,InputOption::VALUE_OPTIONAL,$description,$default);
+    }
+
+    /**
      * Run console command
      *
      * @param InputInterface $input
@@ -154,10 +168,10 @@ abstract class ConsoleCommand extends Command
      * @param string $label
      * @return void
      */
-    public function showError($message, $label = "Error:")
+    public function showError($message, $label = 'Error:')
     {
         $this->style->newLine();
-        $this->style->writeLn("<error>$label $message</error>");
+        $this->style->writeLn('<error>' . $label  . ' ' . $message . '</error>');
         $this->style->newLine();
     }
 
@@ -169,8 +183,8 @@ abstract class ConsoleCommand extends Command
      */
     public function showCompleted($label = null)
     {
-        $label = ($label == null) ? 'done.' : $label;           
+        $label = (empty($label) == true) ? 'done.' : $label;           
         $this->style->newLine();
-        $this->style->writeLn("<fg=green>$label</>");
+        $this->style->writeLn('<fg=green>' . $label . '</>');
     }
 }
