@@ -33,7 +33,7 @@ class ConsoleHelper
      */
     public static function checkMark()
     {
-        return '<fg=green>\xE2\x9C\x93</>';
+        return "<fg=green>\xE2\x9C\x93</>";
     }
     
     /**
