@@ -10,6 +10,7 @@
 namespace Arikaim\Core\Console;
 
 use Symfony\Component\Console\Application as ConsoleApplication;
+use Psr\Container\ContainerInterface;
 
 use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Console\ShellCommand;
@@ -39,6 +40,13 @@ class Application
      * @var string
      */
     protected $version;
+
+    /**
+     * Container
+     *
+     * @var ContainerInterface
+     */
+    protected $container;
 
     /**
      * Constructor
@@ -74,14 +82,10 @@ class Application
      * Add commands to console app
      *
      * @param array $commands
-     * @return boolean
+     * @return void
      */
-    public function addCommands($commands)
+    public function addCommands(array $commands)
     {
-        if (\is_array($commands) == false) {
-            return false;
-        }
-
         foreach ($commands as $class) {          
             $command = Factory::createInstance($class);
             if (\is_object($command) == true) {
@@ -90,7 +94,6 @@ class Application
                     $this->application->setDefaultCommand($command->getName());
                 }
             }
-        }
-        return true;
+        }     
     }
 }
