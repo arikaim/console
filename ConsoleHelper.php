@@ -27,22 +27,44 @@ class ConsoleHelper
     }
 
     /**
-     * Print CHECK MARK
+     * Get CHECK MARK
      *
-     * @return void
+     * @param string $space
+     * @return string
      */
-    public static function checkMark()
+    public static function checkMark($space = ' '): string
     {
-        return "<fg=green>\xE2\x9C\x93</>";
+        return $space . "<fg=green>\xE2\x9C\x93</>" . $space;
     }
-    
+
+    /**
+     * Get error mark
+     *
+     * @param string $space
+     * @return string
+     */
+    public static function errorMark($space = ' '): string
+    {
+        return $space . '<fg=red>x</>' . $space;
+    }
+
+    /**
+     * Get warning
+     *
+     * @return string
+     */
+    public static function warning($label = '!'): string
+    {
+        return '<fg=yellow>' . $label . '</>';
+    }
+
     /**
      * Return status label text
      *
-     * @param bool $status
+     * @param int $status
      * @return string
      */
-    public static function getStatusText($status)
+    public static function getStatusText($status): string
     {
         return ($status == 1) ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>';
     }
@@ -53,7 +75,7 @@ class ConsoleHelper
      * @param bool $value
      * @return string
      */
-    public static function getYesNoText($value)
+    public static function getYesNoText($value): string
     {
         return ($value == true) ? '<fg=green>Yes</>' : '<fg=red>No</>';
     }
@@ -64,7 +86,7 @@ class ConsoleHelper
      * @param string $description
      * @return string
      */
-    public static function getDescriptionText($description)
+    public static function getDescriptionText(string $description): string
     {
         return '<fg=cyan>' . $description . '</>';
     }

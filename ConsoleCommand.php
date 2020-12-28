@@ -166,12 +166,13 @@ abstract class ConsoleCommand extends Command
      *
      * @param string $message
      * @param string $label
+     * @param string $space
      * @return void
      */
-    public function showError($message, $label = 'Error:')
+    public function showError(string $message, string $label = 'Error:', string $space = ' ')
     {
         $this->style->newLine();
-        $this->style->writeLn('<error>' . $label  . ' ' . $message . '</error>');
+        $this->style->writeLn($space . '<error>' . $label  . ' ' . $message . '</error>');
         $this->style->newLine();
     }
 
@@ -179,12 +180,14 @@ abstract class ConsoleCommand extends Command
      * Show 'done' message
      *
      * @param string $label
+     * @param string $space
      * @return void
      */
-    public function showCompleted($label = null)
+    public function showCompleted($label = null,string $space = ' '): void
     {
         $label = (empty($label) == true) ? 'done.' : $label;           
         $this->style->newLine();
-        $this->style->writeLn('<fg=green>' . $label . '</>');
+        $this->style->writeLn($space . '<fg=green>' . $label . '</>');
+        $this->style->newLine();
     }
 }
