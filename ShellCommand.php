@@ -26,7 +26,7 @@ class ShellCommand extends ConsoleCommand
      * 
      * @return void
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('shell');
         $this->setDefault(true);
@@ -58,10 +58,7 @@ class ShellCommand extends ConsoleCommand
             if (empty($command) == false) {
                 $commandInput = new StringInput($command);
                 $app->run($commandInput,$output);
-            }
-          
+            }          
         }
-        
-        return true;
     }
 }

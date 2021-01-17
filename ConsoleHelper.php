@@ -21,7 +21,7 @@ class ConsoleHelper
      * @param string $color
      * @return string
      */
-    public static function getLabelText($text, $color = 'green')
+    public static function getLabelText(string $text,string $color = 'green'): string
     {
         return '<fg=' . $color . '>' . $text . '</>';
     }
@@ -32,7 +32,7 @@ class ConsoleHelper
      * @param string $space
      * @return string
      */
-    public static function checkMark($space = ' '): string
+    public static function checkMark(string $space = ' '): string
     {
         return $space . "<fg=green>\xE2\x9C\x93</>" . $space;
     }
@@ -43,7 +43,7 @@ class ConsoleHelper
      * @param string $space
      * @return string
      */
-    public static function errorMark($space = ' '): string
+    public static function errorMark(string $space = ' '): string
     {
         return $space . '<fg=red>x</>' . $space;
     }
@@ -53,7 +53,7 @@ class ConsoleHelper
      *
      * @return string
      */
-    public static function warning($label = '!'): string
+    public static function warning(string $label = '!'): string
     {
         return '<fg=yellow>' . $label . '</>';
     }
@@ -64,7 +64,7 @@ class ConsoleHelper
      * @param int $status
      * @return string
      */
-    public static function getStatusText($status): string
+    public static function getStatusText(int $status): string
     {
         return ($status == 1) ? '<fg=green>Enabled</>' : '<fg=red>Disabled</>';
     }
@@ -75,7 +75,7 @@ class ConsoleHelper
      * @param bool $value
      * @return string
      */
-    public static function getYesNoText($value): string
+    public static function getYesNoText(bool $value): string
     {
         return ($value == true) ? '<fg=green>Yes</>' : '<fg=red>No</>';
     }
