@@ -279,6 +279,26 @@ abstract class ConsoleCommand extends Command
     }
 
     /**
+     * Show multipel errors
+     *
+     * @param string|array $errors
+     * @param string $label
+     * @param string $space
+     * @return void
+     */
+    public function showErrors($errors, string $label = 'Error:', string $space = ' '): void
+    {
+        if (\is_array($errors) == true) {
+            foreach($errors as $error) {
+                $this->showError($error,$label,$space);
+            }
+            return;
+        }
+
+        $this->showError($errors,$label,$space);
+    }
+
+    /**
      * Show error details
      *
      * @param string|array $details
