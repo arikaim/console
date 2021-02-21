@@ -13,8 +13,12 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\Console\Event\ConsoleTerminateEvent;
+use Symfony\Component\Console\ConsoleEvents;
 
 use Arikaim\Core\Console\Event\BeforeExecuteEvent;
+use Arikaim\Core\Console\Event\AfterExecuteEvent;
 use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Console\ShellCommand;
 
@@ -23,6 +27,10 @@ use Arikaim\Core\Console\ShellCommand;
  */
 class Application
 {       
+    const LOG_MESSAGE           = 'Command executed.';
+    const LOG_ERROR_MESSAGE     = 'Error command execution.';
+    const LOG_TERMINATE_MESSAGE = 'Console command terminated.';
+
     /**
      * App object
      *
@@ -59,15 +67,33 @@ class Application
     protected $dispatcher;
 
     /**
+     * Logger
+     *
+     * @var Arikaim\Core\Interfaces\LoggerInterface|null
+     */
+    protected $logger = null;
+
+    /**
+     * Options
+     *
+     * @var array
+     */
+    protected $options = [];
+
+    /**
      * Constructor
      *
      * @param string $title
      * @param string $version
+     * @param Arikaim\Core\Interfaces\LoggerInterface|null $logger
      */
-    public function __construct(string $title, string $version = '') 
+    public function __construct(string $title, string $version = '', array $options = [], $logger = null) 
     {
         $this->title = $title;
         $this->version = $version;
+        $this->options = $options;
+        $this->logger = $logger;
+
         $this->application = new ConsoleApplication("\n " . $title,$version);    
     
         // add shell command 
@@ -78,13 +104,77 @@ class Application
         }
         // events
         $this->dispatcher = new EventDispatcher();
+
         $this->dispatcher->addListener(BeforeExecuteEvent::EVENT_NAME, function(ConsoleCommandEvent $event) {
             // gets the command to be executed          
             $json = $event->getInput()->getOption('json');           
             $outputType = ($json == true) ? 'json' : null;         
             $event->getCommand()->setOutputType($outputType);
         });
+
+        $this->dispatcher->addListener(AfterExecuteEvent::EVENT_NAME, function(ConsoleCommandEvent $event) {  
+            $name = (\is_object($event->getCommand()) == true) ? $event->getCommand()->getName() : null;
+
+            $this->log(Self::LOG_MESSAGE,['command' => $name]);
+        });
+
+        // errors event
+        $this->dispatcher->addListener(ConsoleEvents::ERROR, function(ConsoleErrorEvent $event) {                             
+            $name = (\is_object($event->getCommand()) == true) ? $event->getCommand()->getName() : null;
+
+            $this->logError(Self::LOG_ERROR_MESSAGE,[                      
+                'command'   => $name,
+                'error'     => $event->getError(),
+                'exit_code' => $event->getExitCode()
+            ]);
+        });
+
+        // terminate event
+        $this->dispatcher->addListener(ConsoleEvents::TERMINATE, function(ConsoleTerminateEvent $event) {              
+            if ($event->getExitCode() == 0) {
+                return;
+            }                 
+            $name = (\is_object($event->getCommand()) == true) ? $event->getCommand()->getName() : null;
+
+            $this->logError(Self::LOG_TERMINATE_MESSAGE,[
+                'command'   => $name,               
+                'exit_code' => $event->getExitCode()
+            ]);
+        });
+
         $this->application->setDispatcher($this->dispatcher);
+    }
+
+    /**
+     * Log message
+     *
+     * @param string $message
+     * @param array $context
+     * @return boolean
+     */
+    protected function log(string $message, array $context = []): bool
+    {      
+        if (($this->options['log'] ?? false) == false) {
+            return false;
+        }
+
+        return (\is_null($this->logger) == false) ? $this->logger->info($message,$context) : false;
+    }
+
+     /**
+     * Log error message
+     *
+     * @param string $message
+     * @param array $context
+     * @return boolean
+     */
+    protected function logError(string $message, array $context = []): bool
+    {      
+        if (($this->options['logErrors'] ?? false) == false) {
+            return false;
+        }
+
+        return (\is_null($this->logger) == false) ? $this->logger->error($message,$context) : false;
     }
 
     /**

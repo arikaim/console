@@ -19,6 +19,7 @@ use Symfony\Component\Console\Helper\Table;
 
 use Arikaim\Core\Console\ConsoleHelper;
 use Arikaim\Core\Console\Event\BeforeExecuteEvent;
+use Arikaim\Core\Console\Event\AfterExecuteEvent;
 
 /**
  * Base class for all commands
@@ -150,12 +151,16 @@ abstract class ConsoleCommand extends Command
         $this->style = new SymfonyStyle($input,$output);
         $this->table = new Table($output);
         $this->addOptionalOption('json','Json output',false);
-        $event = new BeforeExecuteEvent($this,$input,$output);
-        $this->dispatcher->dispatch(BeforeExecuteEvent::EVENT_NAME,$event);
+        $beforeEvent = new BeforeExecuteEvent($this,$input,$output);      
+        $this->dispatcher->dispatch(BeforeExecuteEvent::EVENT_NAME,$beforeEvent);
 
         $exitCode = parent::run($input, $output);
         $this->result['status'] = ($exitCode == 0) ? 'ok' : 'error';
-             
+        
+        // command executed
+        $afterEvent = new AfterExecuteEvent($this,$input,$output);
+        $this->dispatcher->dispatch(AfterExecuteEvent::EVENT_NAME,$afterEvent);
+
         return $exitCode;
     }
  
@@ -207,7 +212,9 @@ abstract class ConsoleCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {      
-        return $this->executeCommand($input,$output);
+        $result = $this->executeCommand($input,$output);
+        
+        return (empty($result) == true) ? 0 : $result;
     }
 
     /**
