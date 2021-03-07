@@ -150,7 +150,7 @@ abstract class ConsoleCommand extends Command
     {
         $this->style = new SymfonyStyle($input,$output);
         $this->table = new Table($output);
-        $this->addOptionalOption('json','Json output',false);
+        $this->addOptionalOption('output','Output format',false);
         $beforeEvent = new BeforeExecuteEvent($this,$input,$output);      
         $this->dispatcher->dispatch(BeforeExecuteEvent::EVENT_NAME,$beforeEvent);
 

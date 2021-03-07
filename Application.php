@@ -9,7 +9,6 @@
  */
 namespace Arikaim\Core\Console;
 
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application as ConsoleApplication;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -51,13 +50,6 @@ class Application
      * @var string
      */
     protected $version;
-
-    /**
-     * Container
-     *
-     * @var ContainerInterface|null
-     */
-    protected $container = null;
 
     /**
      * Event dispatcher
@@ -107,8 +99,7 @@ class Application
 
         $this->dispatcher->addListener(BeforeExecuteEvent::EVENT_NAME, function(ConsoleCommandEvent $event) {
             // gets the command to be executed          
-            $json = $event->getInput()->getOption('json');           
-            $outputType = ($json == true) ? 'json' : null;         
+            $outputType = $event->getInput()->getOption('output');  
             $event->getCommand()->setOutputType($outputType);
         });
 
@@ -207,7 +198,7 @@ class Application
     {
         foreach ($commands as $class) {          
             $command = Factory::createInstance($class);
-    
+          
             if (\is_object($command) == true) {
                 $command->setDispatcher($this->dispatcher);
                 $this->application->add($command);
