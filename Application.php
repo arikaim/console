@@ -149,7 +149,7 @@ class Application
             return false;
         }
 
-        return (\is_null($this->logger) == false) ? $this->logger->info($message,$context) : false;
+        return ($this->logger === null) ? false : $this->logger->info($message,$context);
     }
 
      /**
@@ -165,7 +165,7 @@ class Application
             return false;
         }
 
-        return (\is_null($this->logger) == false) ? $this->logger->error($message,$context) : false;
+        return ($this->logger === null) ? false : $this->logger->error($message,$context);
     }
 
     /**
