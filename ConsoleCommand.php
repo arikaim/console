@@ -16,10 +16,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 use Arikaim\Core\Console\ConsoleHelper;
-use Arikaim\Core\Console\Event\BeforeExecuteEvent;
-use Arikaim\Core\Console\Event\AfterExecuteEvent;
 
 /**
  * Base class for all commands
@@ -151,15 +150,15 @@ abstract class ConsoleCommand extends Command
         $this->style = new SymfonyStyle($input,$output);
         $this->table = new Table($output);
         $this->addOptionalOption('output','Output format',false);
-        $beforeEvent = new BeforeExecuteEvent($this,$input,$output);      
-        $this->dispatcher->dispatch(BeforeExecuteEvent::EVENT_NAME,$beforeEvent);
+        $beforeEvent = new ConsoleCommandEvent($this,$input,$output);      
+        $this->dispatcher->dispatch($beforeEvent,'before.execute.commmand');
 
         $exitCode = parent::run($input, $output);
         $this->result['status'] = ($exitCode == 0) ? 'ok' : 'error';
         
         // command executed
-        $afterEvent = new AfterExecuteEvent($this,$input,$output);
-        $this->dispatcher->dispatch(AfterExecuteEvent::EVENT_NAME,$afterEvent);
+        $afterEvent = new ConsoleCommandEvent($this,$input,$output);
+        $this->dispatcher->dispatch($afterEvent,'after.execute.commmand');
 
         return $exitCode;
     }

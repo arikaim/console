@@ -16,8 +16,6 @@ use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\ConsoleEvents;
 
-use Arikaim\Core\Console\Event\BeforeExecuteEvent;
-use Arikaim\Core\Console\Event\AfterExecuteEvent;
 use Arikaim\Core\Utils\Factory;
 use Arikaim\Core\Console\ShellCommand;
 
@@ -97,13 +95,13 @@ class Application
         // events
         $this->dispatcher = new EventDispatcher();
 
-        $this->dispatcher->addListener(BeforeExecuteEvent::EVENT_NAME, function(ConsoleCommandEvent $event) {
+        $this->dispatcher->addListener('before.execute.commmand', function(ConsoleCommandEvent $event) {
             // gets the command to be executed          
             $outputType = $event->getInput()->getOption('output');  
             $event->getCommand()->setOutputType($outputType);
         });
 
-        $this->dispatcher->addListener(AfterExecuteEvent::EVENT_NAME, function(ConsoleCommandEvent $event) {  
+        $this->dispatcher->addListener('after.execute.commmand', function(ConsoleCommandEvent $event) {  
             $name = (\is_object($event->getCommand()) == true) ? $event->getCommand()->getName() : null;
 
             $this->log(Self::LOG_MESSAGE,['command' => $name]);
