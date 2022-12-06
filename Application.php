@@ -197,7 +197,7 @@ class Application
         foreach ($commands as $class) {          
             $command = Factory::createInstance($class);
           
-            if (\is_object($command) == true) {
+            if ($command != null) {
                 $command->setDispatcher($this->dispatcher);
                 $this->application->add($command);
                 if ($command->isDefault() == true) {
