@@ -17,6 +17,7 @@ use Symfony\Component\Console\Event\ConsoleTerminateEvent;
 use Symfony\Component\Console\ConsoleEvents;
 
 use Arikaim\Core\Utils\Factory;
+use Arikaim\Core\Utils\Utils;
 use Arikaim\Core\Console\ShellCommand;
 
 /**
@@ -102,8 +103,13 @@ class Application
         });
 
         $this->dispatcher->addListener('after.execute.commmand', function(ConsoleCommandEvent $event) {  
-            $name = (\is_object($event->getCommand()) == true) ? $event->getCommand()->getName() : null;
-
+            $command = $event->getCommand();
+            $name = (\is_object($command) == true) ? $command->getName() : null;
+              
+            if ($command->isJsonOutput() == true) {
+                echo Utils::jsonEncode($command->getResult(),true);
+            }
+            
             $this->log(Self::LOG_MESSAGE,['command' => $name]);
         });
 

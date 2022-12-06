@@ -19,6 +19,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 
 use Arikaim\Core\Console\ConsoleHelper;
+use Arikaim\Core\Utils\Utils;
 
 /**
  * Base class for all commands
@@ -76,7 +77,8 @@ abstract class ConsoleCommand extends Command
     public function __construct(?string $name = null, ?string $description = null) 
     {
         parent::__construct($name);
-    
+        
+        $this->result = [];
         $this->default = false;
 
         if (empty($name) == false) {
@@ -113,9 +115,19 @@ abstract class ConsoleCommand extends Command
      *
      * @return boolean
      */
-    public function isConsoleOutput()
+    public function isConsoleOutput(): bool
     {
         return empty($this->outputType);
+    }
+
+    /**
+     * Return true if output is to console
+     *
+     * @return boolean
+     */
+    public function isJsonOutput(): bool
+    {
+        return ($this->outputType == 'json');
     }
 
     /**
@@ -211,6 +223,11 @@ abstract class ConsoleCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {      
+        $this->outputType = $input->getOption('output');
+
+        if ($this->outputType == 'json') {
+
+        }
         $result = $this->executeCommand($input,$output);
         
         return (empty($result) == true) ? 0 : $result;
@@ -256,12 +273,12 @@ abstract class ConsoleCommand extends Command
      */
     public function showTitle(?string $title = null,string $space = ' '): void
     {
-        if ($this->isConsoleOutput() == false) {
+        $title = $title ?? $this->getDescription();
+        if ($this->isJsonOutput() == true) {
             $this->result['title'] = $title;
             return;
         }
-
-        $title = $title ?? $this->getDescription();
+        
         $title = ConsoleHelper::getDescriptionText($title);
         
         $this->style->newLine();
@@ -279,6 +296,11 @@ abstract class ConsoleCommand extends Command
      */
     public function showError(string $message, string $label = 'Error:', string $space = ' '): void
     {
+        if ($this->isJsonOutput() == true) {
+            $this->result['error'] = $message;
+            return;
+        }
+
         $this->style->newLine();
         $this->style->writeLn($space . '<error>' . $label  . ' ' . $message . '</error>');
         $this->style->newLine();
@@ -313,6 +335,10 @@ abstract class ConsoleCommand extends Command
      */
     public function showErrorDetails($details, $space = ' '): void
     {
+        if ($this->isJsonOutput() == true) {
+            return;
+        }
+
         if (\is_array($details) == true) {
             foreach ($details as $item) {
                 $this->style->writeLn($space . ConsoleHelper::errorMark() . ' ' . $item);
@@ -341,6 +367,10 @@ abstract class ConsoleCommand extends Command
      */
     public function newLine(): void
     {
+        if ($this->isJsonOutput() == true) {
+            return;
+        }
+
         $this->style->newLine();
     }
 
@@ -353,6 +383,10 @@ abstract class ConsoleCommand extends Command
      */
     public function showCompleted(?string $label = null,string $space = ' '): void
     {
+        if ($this->isJsonOutput() == true) {
+            return;
+        }
+
         $label = (empty($label) == true) ? 'done.' : $label;           
         $this->style->newLine();
         $this->style->writeLn($space . '<fg=green>' . $label . '</>');
@@ -370,6 +404,12 @@ abstract class ConsoleCommand extends Command
      */
     public function writeField(string $label, $value,string $color = 'cyan',string $space = ' '): void
     {
+        if ($this->isJsonOutput() == true) {
+            $key = Utils::slug($label,'_');
+            $this->result[$key] = $value;
+            return;
+        }
+
         $this->style->write($space);
         $label = ConsoleHelper::getLabelText($label,$color);
         $this->style->write($label . ' ');
@@ -388,6 +428,10 @@ abstract class ConsoleCommand extends Command
     public function writeFieldLn(string $label, $value,string $color = 'cyan',string $space = ' '): void
     {
         $this->writeField($label,$value,$color,$space);
+        if ($this->isJsonOutput() == true) {
+            return;
+        }
+
         $this->newLine();
     }
 
@@ -401,6 +445,10 @@ abstract class ConsoleCommand extends Command
      */
     public function writeLn(string $text, string $space = ' ', ?string $color = null): void
     {
+        if ($this->isJsonOutput() == true) {
+            return;
+        }
+
         if (empty($color) == false) {
             $text = ConsoleHelper::getLabelText($text,$color);
         }
