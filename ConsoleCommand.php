@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 use Arikaim\Core\Console\ConsoleHelper;
 use Arikaim\Core\Utils\Utils;
@@ -69,6 +70,13 @@ abstract class ConsoleCommand extends Command
     protected $result = [];
 
     /**
+     * Progress bar ref
+     *
+     * @var ProgressBar|null
+     */
+    private $progress;
+
+    /**
      * Constructor
      *
      * @param string|null $name
@@ -80,6 +88,7 @@ abstract class ConsoleCommand extends Command
         
         $this->result = [];
         $this->default = false;
+        $this->progress = null;
 
         if (empty($name) == false) {
             $this->setName($name);
@@ -87,6 +96,21 @@ abstract class ConsoleCommand extends Command
         if (empty($description) == false) {
             $this->setDescription($description);
         }
+    }
+
+    /**
+     * Get progress bar
+     *
+     * @param integer|null $max
+     * @return ProgressBar
+     */
+    protected function progress(?int $max = null)
+    {
+        if ($max != null) {
+            $this->progress->setMaxSteps($max);
+        }
+        
+        return $this->progress;
     }
 
     /**
@@ -161,11 +185,13 @@ abstract class ConsoleCommand extends Command
     {
         $this->style = new SymfonyStyle($input,$output);
         $this->table = new Table($output);
+        $this->progress = new ProgressBar($output,100);
+
         $this->addOptionalOption('output','Output format',false);
         $beforeEvent = new ConsoleCommandEvent($this,$input,$output);      
         $this->dispatcher->dispatch($beforeEvent,'before.execute.commmand');
 
-        $exitCode = parent::run($input, $output);
+        $exitCode = parent::run($input,$output);
         $this->result['status'] = ($exitCode == 0) ? 'ok' : 'error';
         
         // command executed
@@ -225,9 +251,6 @@ abstract class ConsoleCommand extends Command
     {      
         $this->outputType = $input->getOption('output');
 
-        if ($this->outputType == 'json') {
-
-        }
         $result = $this->executeCommand($input,$output);
         
         return (empty($result) == true) ? 0 : $result;
