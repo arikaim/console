@@ -19,6 +19,10 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Helper\ProgressBar;
 
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+
 use Arikaim\Core\Console\ConsoleHelper;
 use Arikaim\Core\Utils\Utils;
 
@@ -75,6 +79,20 @@ abstract class ConsoleCommand extends Command
      * @var ProgressBar|null
      */
     private $progress;
+
+    /**
+     * Input
+     *
+     * @var InputInterface
+     */
+    protected $input;
+
+    /**
+     * Output
+     *
+     * @var OutputInterface
+     */
+    protected $output;
 
     /**
      * Constructor
@@ -183,6 +201,9 @@ abstract class ConsoleCommand extends Command
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
+        $this->input = $input;
+        $this->output = $output;
+
         $this->style = new SymfonyStyle($input,$output);
         $this->table = new Table($output);
         $this->progress = new ProgressBar($output,100);
@@ -478,4 +499,65 @@ abstract class ConsoleCommand extends Command
       
         $this->style->writeLn($space . $text);
     }
+
+    /**
+     * Ask console question
+     *
+     * @param string $text
+     * @param mixed $default
+     * @param array $autocomplete
+     * @return mixed
+     */
+    protected function question(string $text, $default = null, array $autocomplete = [])
+    {
+        $question = new Question($text,$default);
+        $helper = $this->getHelper('question');
+        $question->setAutocompleterValues($autocomplete);
+
+        return $helper->ask($this->input,$this->output,$question);
+    }
+
+    /**
+     * Ask confirmation question
+     *
+     * @param string  $text
+     * @param boolean $default
+     * @return bool
+     */
+    protected function confirmation(string $text, bool $default = true): bool
+    {
+        $question = new ConfirmationQuestion($text,$default,'/^(y|j)/i');
+        $helper = $this->getHelper('question');
+
+        return $helper->ask($this->input,$this->output,$question);
+    }
+
+    /**
+     * Choice question
+     *
+     * @param string      $text
+     * @param array       $items
+     * @param boolean     $multiselect
+     * @param string|null $error
+     * @return mixed
+     */
+    protected function choice(
+        string $text, 
+        array $items, 
+        bool $multiselect = false, 
+        ?string $error = null
+    )
+    {
+        $question = new ChoiceQuestion($text,$items);
+        $question->setMultiselect($multiselect);
+        if (empty($error) == false) {
+            $question->setErrorMessage($error);
+        }
+
+        $question->setAutocompleterValues($items);
+        $helper = $this->getHelper('question');
+
+        return $helper->ask($this->input,$this->output,$question);
+    }
+
 }
