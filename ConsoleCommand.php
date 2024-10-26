@@ -425,7 +425,7 @@ abstract class ConsoleCommand extends Command
      * @param string $space
      * @return void
      */
-    public function showCompleted(?string $label = null,string $space = ' '): void
+    public function showCompleted(?string $label = null, string $space = ' '): void
     {
         if ($this->isJsonOutput() == true) {
             return;
@@ -446,7 +446,7 @@ abstract class ConsoleCommand extends Command
      * @param string $space
      * @return void
      */
-    public function writeField(string $label, $value,string $color = 'cyan',string $space = ' '): void
+    public function writeField(string $label, $value, string $color = 'cyan', string $space = ' '): void
     {
         if ($this->isJsonOutput() == true) {
             $key = Utils::slug($label,'_');
@@ -469,7 +469,7 @@ abstract class ConsoleCommand extends Command
      * @param string $space
      * @return void
      */
-    public function writeFieldLn(string $label, $value,string $color = 'cyan',string $space = ' '): void
+    public function writeFieldLn(string $label, $value, string $color = 'cyan',string $space = ' '): void
     {
         $this->writeField($label,$value,$color,$space);
         if ($this->isJsonOutput() == true) {
@@ -487,7 +487,7 @@ abstract class ConsoleCommand extends Command
      * @param string? $color
      * @return void
      */
-    public function writeLn(string $text, string $space = ' ', ?string $color = null): void
+    public function writeLn(string $text = '', string $space = ' ', ?string $color = null): void
     {
         if ($this->isJsonOutput() == true) {
             return;
