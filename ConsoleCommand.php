@@ -199,7 +199,7 @@ abstract class ConsoleCommand extends Command
      * @param OutputInterface $output
      * @return mixed
      */
-    public function run(InputInterface $input, OutputInterface $output)
+    public function run(InputInterface $input, OutputInterface $output): int
     {
         $this->input = $input;
         $this->output = $output;
